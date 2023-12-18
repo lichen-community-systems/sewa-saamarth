@@ -1,0 +1,27 @@
+{
+    copyJobs: [{
+        source: "%sewa-e-kheti/data",
+        target: "%sewa-e-kheti/docs/data"
+    }, {
+        source: "%sewa-e-kheti/src/lib",
+        target: "%sewa-e-kheti/docs/lib"
+    }, {
+        source: "%sewa-e-kheti/src/css",
+        target: "%sewa-e-kheti/docs/css"
+    }, {
+        source: "%sewa-e-kheti/src/css",
+        target: "%sewa-e-kheti/docs/css"
+    }, {
+        source: "%sewa-e-kheti/src/html/index.html",
+        target: "%sewa-e-kheti/docs/index.html",
+        replaceSource: ["../lib", "../js/client", "../css", "renderCart(\"../..\")"],
+        replaceTarget: ["./lib", "./js", "./css", "renderCart(\".\")"]
+    }, {
+        source: "%sewa-e-kheti/src/js/client/cart.js",
+        target: "%sewa-e-kheti/docs/js/cart.js"
+    }, {
+        source: "%sewa-e-kheti/img/small",
+        target: "%sewa-e-kheti/docs/img/small"
+    }
+    ]
+}
