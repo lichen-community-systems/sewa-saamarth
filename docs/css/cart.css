@@ -1,7 +1,7 @@
 body {
     /* Ripped off from GitHub */
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
-    margin: 1rem 1.5rem 1rem 1.5rem;
+    margin: 0.75rem 1.5rem 1rem 1.5rem;
     height: calc(100vh - 2rem);
     overflow: hidden;
     display: flex;
@@ -10,7 +10,9 @@ body {
 
 h1 {
     margin-block-start: 0;
-    margin-block-end: 0;
+    margin-block-end: 3px;
+    font-size: 1.5rem;
+    text-align: center;
 }
 
 
@@ -23,12 +25,15 @@ p {
     display: flex;
     flex-direction: column;
     height: 100%;
-    max-height: calc(100vh - 6rem);
-    width: 360px;
+    max-height: calc(100vh - 4rem);
+    width: calc(min(340px, 100vw - 3rem));
+    justify-content: space-between;
+    margin: 0 auto;
 }
 
 .cart-rows {
     overflow-y: scroll;
+    margin-top: 5px;
 }
 
 .row-img {
@@ -60,13 +65,12 @@ p {
     color: #fc8900;
     width: 2rem;
     height: 1.5rem;
-    line-height: 1.5em;
     border-radius: 0.75rem;
     text-align: center;
     font-size: 18px;
     user-select: none;
     /** Compensate for offset of ndash character */
-    line-height: 1.3rem;
+    line-height: 1.4rem;
 }
 
 .adjust-button.disabled {
@@ -111,6 +115,7 @@ p {
     flex-direction: row;
     padding-bottom: 7px;
     align-items: center;
+    justify-content: space-between;
  }
 
 .row-item {
@@ -125,6 +130,7 @@ p {
 .row-order-price {
     width: 3rem;
     text-align: end;
+    margin-right: 0.5rem;
 }
 
 .cart-total {
@@ -136,7 +142,7 @@ p {
 }
 
 .cart-total-price {
-    margin-right: 5em;
+    margin-right: 0.5rem;
 }
 
 .cart-summary {
