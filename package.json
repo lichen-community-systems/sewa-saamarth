@@ -1,6 +1,6 @@
 {
-    "name": "sewa-e-kheti",
-    "description": "SEWA e-kheti application for SEWA Lilotri",
+    "name": "sewa-saamarth",
+    "description": "SEWA Saamarth application supporting spreadsheet-driven grassroots commerce",
     "version": "1.0.0",
     "author": "Lichen Community Systems",
     "scripts": {
@@ -20,7 +20,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/lichen-community-systems/sewa-e-kheti"
+        "url": "https://github.com/lichen-community-systems/sewa-saamarth"
     },
     "engines": {
         "node": ">=14.0.0"

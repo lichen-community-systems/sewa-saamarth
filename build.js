@@ -116,7 +116,7 @@ const copyGlob = function (sourcePattern, targetDir) {
 const copyDep = function (source, target, replaceSource, replaceTarget) {
     const targetPath = fluid.module.resolvePath(target);
     const sourceModule = fluid.module.refToModuleName(source);
-    if (sourceModule && sourceModule !== "sewa-e-kheti") {
+    if (sourceModule && sourceModule !== "sewa-saamarth") {
         require(sourceModule);
     }
     const sourcePath = fluid.module.resolvePath(source);
@@ -153,6 +153,6 @@ const build = async function () {
     });
 };
 
-fluid.module.register("sewa-e-kheti", __dirname, require);
+fluid.module.register("sewa-saamarth", __dirname, require);
 
 build().then();
