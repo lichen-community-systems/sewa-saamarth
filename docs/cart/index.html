@@ -5,14 +5,16 @@
   <script src="../lib/preact.min.js"></script>
   <script src="../lib/signals-core.min.js"></script>
   <script src="../lib/signals.min.js"></script>
+  <script charset="utf-8" src="../js/shared/cart.js"></script>
   <script charset="utf-8" src="../js/client/cart.js"></script>
   <link rel="stylesheet" href="../css/cart.css" />
 </head>
 <body>
-<h1>SEWA Saamarth app</h1>
+<h1>SEWA Saamarth</h1>
 <div id="cart"></div>
 <script>
-  renderCart("../..");
+  const node = document.getElementById("cart");
+  sewa.renderCart("../..");
 </script>
 </body>
 </html>

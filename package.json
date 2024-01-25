@@ -5,19 +5,27 @@
     "author": "Lichen Community Systems",
     "scripts": {
         "lint": "fluid-lint-all",
-        "build": "node src/js/reknit.js"
+        "start": "node src/js/server/server.js",
+        "build": "node build.js"
     },
     "dependencies": {
         "preact": "10.19.3",
+        "preact-render-to-string": "6.3.1",
+        "linkedom": "0.16.8",
         "express": "4.18.2",
         "@preact/signals": "1.2.2",
         "htm": "3.1.1",
-        "googleapis": "129.0.0"
+        "googleapis": "131.0.0"
     },
     "devDependencies": {
-        "sharp": "0.33.1",
+        "sharp": "0.33.2",
         "json5": "2.2.3",
-        "fs-extra": "11.1.1"
+        "glob": "10.3.10",
+        "fs-extra": "11.2.0",
+        "infusion": "4.6.0",
+        "eslint": "8.56.0",
+        "eslint-config-fluid": "2.1.1",
+        "fluid-lint-all": "1.2.10"
     },
     "repository": {
         "type": "git",

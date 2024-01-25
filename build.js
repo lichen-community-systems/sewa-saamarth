@@ -1,6 +1,11 @@
+/* eslint-env node */
+
+"use strict";
+
 const fs = require("fs-extra"),
     path = require("path"),
-    JSON5 = require("JSON5");
+    glob = require("glob"),
+    JSON5 = require("json5");
 
 const fluid = {
     module: {}
@@ -63,6 +68,8 @@ fluid.stringTemplate = function (template, values, warnFunc) {
  * say, %moduleName, into an absolute path relative to that module, using the
  * database of base directories registered previously with fluid.module.register.
  * If the path does not begin with such a module reference, it is returned unchanged.
+ * @param {String} path - The path to be resolved
+ * @return {String} The resolved path
  */
 fluid.module.resolvePath = function (path) {
     return fluid.stringTemplate(path, fluid.module.getDirs()).replace("//", "/");
@@ -84,15 +91,9 @@ fluid.module.refToModuleName = function (ref) {
     return matches && matches[1];
 };
 
-const makeArray = function (value) {
-    return Array.isArray(value) ? value : [value];
-};
-
-const doReplace = function (text, replaceSourceI, replaceTargetI) {
-    const replaceSource = makeArray(replaceSourceI);
-    const replaceTarget = makeArray(replaceTargetI);
-    replaceSource.forEach((replaceOneSource, i) => {
-        text = text.replaceAll(replaceOneSource, replaceTarget[i]);
+const doReplace = function (text, replace) {
+    replace.forEach(({replaceSource, replaceTarget}) => {
+        text = text.replaceAll(replaceSource, replaceTarget);
     });
     return text;
 };
@@ -113,16 +114,17 @@ const copyGlob = function (sourcePattern, targetDir) {
 
 /** Copy dependencies into docs directory for GitHub pages **/
 
-const copyDep = function (source, target, replaceSource, replaceTarget) {
+const copyDep = function (source, target, replace) {
     const targetPath = fluid.module.resolvePath(target);
     const sourceModule = fluid.module.refToModuleName(source);
     if (sourceModule && sourceModule !== "sewa-saamarth") {
         require(sourceModule);
     }
     const sourcePath = fluid.module.resolvePath(source);
-    if (replaceSource) {
+    if (replace) {
         const text = fs.readFileSync(sourcePath, "utf8");
-        const replaced = doReplace(text, replaceSource, replaceTarget);
+        const replaced = doReplace(text, replace);
+        fs.ensureDirSync(path.dirname(targetPath));
         fs.writeFileSync(targetPath, replaced, "utf8");
         console.log(`Copied file: ${targetPath}`);
     } else if (sourcePath.includes("*")) {
@@ -149,7 +151,7 @@ const build = async function () {
     const config = fluid.loadJSON5File("buildConfig.json5");
 
     config.copyJobs.forEach(function (dep) {
-        copyDep(dep.source, dep.target, dep.replaceSource, dep.replaceTarget);
+        copyDep(dep.source, dep.target, dep.replace);
     });
 };
 

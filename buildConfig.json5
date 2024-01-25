@@ -12,13 +12,29 @@
         source: "%sewa-saamarth/src/css",
         target: "%sewa-saamarth/docs/css"
     }, {
-        source: "%sewa-saamarth/src/html/index.html",
-        target: "%sewa-saamarth/docs/index.html",
-        replaceSource: ["../lib", "../js/client", "../css", "renderCart(\"../..\")"],
-        replaceTarget: ["./lib", "./js", "./css", "renderCart(\".\")"]
+        source: "%sewa-saamarth/src/html/cart.html",
+        target: "%sewa-saamarth/docs/cart/index.html",
+        replace: [
+            {
+            source: "../lib",
+            target: "./lib"
+        }, {
+            source: "../js",
+            target: "./js"
+        }, {
+            source: "../css",
+            target: "./css"
+        }, {
+            source: "renderCart(\"../..\")",
+            target: "renderCart(\"..\")"
+        }
+        ]
     }, {
-        source: "%sewa-saamarth/src/js/client/cart.js",
-        target: "%sewa-saamarth/docs/js/cart.js"
+        source: "%sewa-saamarth/src/js/client/*.js",
+        target: "%sewa-saamarth/docs/js/client"
+    }, {
+        source: "%sewa-saamarth/src/js/shared/*.js",
+        target: "%sewa-saamarth/docs/js/shared"
     }, {
         source: "%sewa-saamarth/img/small",
         target: "%sewa-saamarth/docs/img/small"

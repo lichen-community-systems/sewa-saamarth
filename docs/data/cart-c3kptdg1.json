@@ -1,0 +1,305 @@
+{
+    "prices": {
+        "items": {
+            "bataka": {
+                "displayName": "Bataka",
+                "code": "bataka",
+                "english": "Sweet potato",
+                "measure": "kg",
+                "price": "40"
+            },
+            "onion": {
+                "displayName": "Onion",
+                "code": "onion",
+                "english": "Onion",
+                "measure": "kg",
+                "price": ""
+            },
+            "tameta": {
+                "displayName": "Tameta",
+                "code": "tameta",
+                "english": "Tomato",
+                "measure": "kg",
+                "price": ""
+            },
+            "bhinda": {
+                "displayName": "Bhinda",
+                "code": "bhinda",
+                "english": "Okra",
+                "measure": "kg",
+                "price": ""
+            },
+            "cobij": {
+                "displayName": "Cobij",
+                "code": "cobij",
+                "english": "Cabbage",
+                "measure": "kg",
+                "price": "50"
+            },
+            "flower": {
+                "displayName": "Flower",
+                "code": "flower",
+                "english": "Cauliflower",
+                "measure": "kg",
+                "price": ""
+            },
+            "bhuta": {
+                "displayName": "Bhutha",
+                "code": "bhuta",
+                "english": "Sweetcorn",
+                "measure": "kg",
+                "price": ""
+            },
+            "dudhi": {
+                "displayName": "Dudhi",
+                "code": "dudhi",
+                "english": "Bottle Gourd",
+                "measure": "kg",
+                "price": ""
+            },
+            "ravaiya": {
+                "displayName": "Raviya",
+                "code": "ravaiya",
+                "english": "Aubergine",
+                "measure": "kg",
+                "price": ""
+            },
+            "gavar": {
+                "displayName": "Gavar",
+                "code": "gavar",
+                "english": "Guar (Cluster Bean)",
+                "measure": "kg",
+                "price": ""
+            },
+            "karela": {
+                "displayName": "Karela",
+                "code": "karela",
+                "english": "Bitter Gourd",
+                "measure": "kg",
+                "price": ""
+            },
+            "gajar": {
+                "displayName": "Gajar",
+                "code": "gajar",
+                "english": "Carrot",
+                "measure": "kg",
+                "price": ""
+            },
+            "beet": {
+                "displayName": "Beet",
+                "code": "beet",
+                "english": "Beetroot",
+                "measure": "kg",
+                "price": ""
+            },
+            "kheera-kakdi": {
+                "displayName": "Kheera kakadi",
+                "code": "kheera-kakdi",
+                "english": "Cucumber",
+                "measure": "kg",
+                "price": ""
+            },
+            "adu": {
+                "displayName": "New Adu",
+                "code": "adu",
+                "english": "Ginger",
+                "measure": "kg",
+                "price": ""
+            },
+            "marcha": {
+                "displayName": "Marcha",
+                "code": "marcha",
+                "english": "Chilli",
+                "measure": "kg",
+                "price": ""
+            },
+            "limbu": {
+                "displayName": "Limbu",
+                "code": "limbu",
+                "english": "Lemon",
+                "measure": "kg",
+                "price": ""
+            },
+            "kothmir": {
+                "displayName": "Kothmir",
+                "code": "kothmir",
+                "english": "Coriander",
+                "measure": "kg",
+                "price": ""
+            },
+            "lilu-lashan": {
+                "displayName": "Lilu Lashan",
+                "code": "lilu-lashan",
+                "english": "Green Garlic",
+                "measure": "kg",
+                "price": ""
+            },
+            "lashan": {
+                "displayName": "Lashan",
+                "code": "lashan",
+                "english": "Garlic",
+                "measure": "kg",
+                "price": ""
+            },
+            "green-onion": {
+                "displayName": "Green Onion",
+                "code": "green-onion",
+                "english": "Spring Onion",
+                "measure": "kg",
+                "price": ""
+            },
+            "palak": {
+                "displayName": "Palak",
+                "code": "palak",
+                "english": "Spinach",
+                "measure": "kg",
+                "price": ""
+            },
+            "methi": {
+                "displayName": "Methi",
+                "code": "methi",
+                "english": "Fenugreek",
+                "measure": "kg",
+                "price": ""
+            },
+            "mula": {
+                "displayName": "Mula",
+                "code": "mula",
+                "english": "Radish",
+                "measure": "kg",
+                "price": ""
+            },
+            "kacha-papaya": {
+                "displayName": "Kachu papaiyu",
+                "code": "kacha-papaya",
+                "english": "Papaya",
+                "measure": "kg",
+                "price": "200"
+            },
+            "vadhvani-marcha": {
+                "displayName": "Vadhwani Marcha",
+                "code": "vadhvani-marcha",
+                "english": "Green chili",
+                "measure": "kg",
+                "price": "110"
+            },
+            "pikador-marcha": {
+                "displayName": "Pikador Marcha",
+                "code": "pikador-marcha",
+                "english": "Picador Chilli",
+                "measure": "kg",
+                "price": "70"
+            }
+        },
+        "codes": [
+            "bataka",
+            "onion",
+            "tameta",
+            "bhinda",
+            "cobij",
+            "flower",
+            "bhuta",
+            "dudhi",
+            "ravaiya",
+            "gavar",
+            "karela",
+            "gajar",
+            "beet",
+            "kheera-kakdi",
+            "adu",
+            "marcha",
+            "limbu",
+            "kothmir",
+            "lilu-lashan",
+            "lashan",
+            "green-onion",
+            "palak",
+            "methi",
+            "mula",
+            "kacha-papaya",
+            "vadhvani-marcha",
+            "pikador-marcha"
+        ],
+        "byDate": {
+            "22/12/23": [
+                "40",
+                "",
+                "",
+                "",
+                "50",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "200",
+                "110",
+                "70"
+            ],
+            "14/12/23": [
+                "35",
+                "70",
+                "65",
+                "80",
+                "40",
+                "80",
+                "30",
+                "40",
+                "80",
+                "120",
+                "80",
+                "50",
+                "40",
+                "60",
+                "140",
+                "40",
+                "70",
+                "50",
+                "270",
+                "320",
+                "50",
+                "50",
+                "40",
+                "40",
+                "200",
+                "100",
+                "60"
+            ]
+        }
+    },
+    "user": {
+        "id": "c3kptdg1",
+        "name": "Heli Shukla Karvat"
+    },
+    "order": {
+        "number": "1",
+        "date": "18/12/23",
+        "name": "Heli Shukla Karvat",
+        "id": "c3kptdg1",
+        "value": "₹292.00",
+        "paid": "TRUE",
+        "items": {
+            "bataka": "1000gm",
+            "tameta": "500gm",
+            "cobij": "250",
+            "gavar": "350",
+            "gajar": "500",
+            "marcha": "100",
+            "limbu": "250"
+        }
+    }
+}

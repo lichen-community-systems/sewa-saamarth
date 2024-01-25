@@ -1,0 +1,10 @@
+{
+    "name": "infusion",
+    "description": "Experimental packaging of a 'lite' Infusion as an ES6 module",
+    "version": "6.0.0-dev",
+    "author": "Fluid Project",
+    "bugs": "http://issues.fluidproject.org/browse/FLUID",
+    "homepage": "http://www.fluidproject.org/",
+    "license": "(BSD-3-Clause OR ECL-2.0)",
+    "type": "module"
+}

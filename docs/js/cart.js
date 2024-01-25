@@ -116,12 +116,12 @@ const renderCart = async function (relativePath) {
 
         const model = modelisePrices(prices, "Heli Shukla Karvat");
 
-        const element = document.getElementById("cart");
         const nodes = html`
             <${Cart} model=${model} relativePath=${relativePath}/>`
 
         const now = Date.now();
 
+        const element = document.getElementById("cart");
         preact.render(nodes, element);
         console.log("Rendered in " + (Date.now() - now) + " ms");
     });
