@@ -7,6 +7,7 @@ const {h} = require("preact");
 const {render} = require("preact-render-to-string");
 const fs = require("fs");
 const htm = require("htm");
+const JSON5 = require("json5");
 
 const html = htm.bind(h);
 const {signal, computed} = require("@preact/signals");
@@ -22,23 +23,7 @@ const fluid = require("../shared/fluidLite.js")();
 
 const {parseDocument} = require("../node/doc.js");
 
-const tenantConfig = {
-    lilotri: {
-        name: "SEWA Lilotri",
-        doc: "1SW5-DdhxQVyT7MM1OTh_LXL4pP-BBYFxbDQ9TRRQ3U4",
-        cartMock: "data/cart-c3kptdg1.json",
-        // Populate this using src/js/node/sheetToJson.js - must not commit this to GitHub
-        convertedMock: "scratch/converted.json"
-    }
-};
-
-const serverConfig = {
-    mock: false,
-    // Until we can cache Google sheet data at the server, better to have client fetch it
-    isomorphic: false,
-    port: 8080,
-    tenantConfig
-};
+const serverConfig = JSON5.parse(fs.readFileSync("serverConfig.json5", "utf8"));
 
 const readJSONSync = function (path) {
     return JSON.parse(fs.readFileSync(path, "utf8"));
@@ -51,7 +36,7 @@ const replaceNodeText = function (document, selector, text) {
 
 const startServer = async function (googleSheetClient, config) {
 
-    const allDocs = await fluid.asyncTransform(tenantConfig, async tenant => {
+    const allDocs = await fluid.asyncTransform(config.tenantConfig, async tenant => {
         if (!config.mock) {
             const allSheets = await sewa.getAllSheets(googleSheetClient, tenant.doc);
             return sewa.convertSheets(allSheets);

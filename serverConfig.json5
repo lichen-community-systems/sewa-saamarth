@@ -1,0 +1,15 @@
+{
+    mock: false,
+    // Until we can cache Google sheet data at the server, better to have client fetch it
+    isomorphic: false,
+    port: 8080,
+    tenantConfig: {
+        lilotri: {
+            name: "SEWA Lilotri",
+            doc: "1SW5-DdhxQVyT7MM1OTh_LXL4pP-BBYFxbDQ9TRRQ3U4",
+            cartMock: "data/cart-c3kptdg1.json",
+            // Populate this using src/js/node/sheetToJson.js - must not commit this to GitHub
+            convertedMock: "scratch/converted.json"
+        }
+    }
+}
