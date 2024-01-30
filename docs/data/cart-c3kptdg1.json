@@ -221,7 +221,7 @@
             "pikador-marcha"
         ],
         "byDate": {
-            "22/12/23": [
+            "30/01/24": [
                 "40",
                 "",
                 "",
@@ -279,27 +279,35 @@
                 "100",
                 "60"
             ]
+        },
+        "cutoffsByDate": {
+            "30/01/24": "20:00",
+            "14/12/23": "20:00"
         }
     },
+    "date": "18/12/23",
     "user": {
         "id": "c3kptdg1",
         "name": "Heli Shukla Karvat"
     },
-    "order": {
-        "number": "1",
+    "currentOrder": {
+        "orderNumber": "1",
         "date": "18/12/23",
         "name": "Heli Shukla Karvat",
-        "id": "c3kptdg1",
+        "userId": "c3kptdg1",
         "value": "₹292.00",
         "paid": "TRUE",
+        "rating": "4",
+        "feedbackText": "",
         "items": {
-            "bataka": "1000gm",
-            "tameta": "500gm",
-            "cobij": "250",
-            "gavar": "350",
-            "gajar": "500",
-            "marcha": "100",
-            "limbu": "250"
+            "bataka": "1000gm@40",
+            "tameta": "500gm@65",
+            "cobij": "250@50",
+            "gavar": "350@120",
+            "gajar": "500@50",
+            "marcha": "100@40",
+            "limbu": "250@70"
         }
-    }
+    },
+    "currentOrderIndex": 0
 }

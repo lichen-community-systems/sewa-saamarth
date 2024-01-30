@@ -1,0 +1,43 @@
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <script src="../src/js/shared/fluidLite.js"></script>
+  <script src="../src/lib/htm.js"></script>
+  <script src="../src/lib/preact.min.js"></script>
+  <script src="../src/lib/hooks.umd.js"></script>
+  <script src="../src/lib/signals-core.min.js"></script>
+  <script src="../src/lib/signals.min.js"></script>
+
+  <script src="../src/js/client/utils.js"></script>
+
+  <script src="../src/js/shared/stars.js"></script>
+
+  <link rel="stylesheet" href="../src/css/stars.css" />
+
+  <script src="testStars.js"></script>
+  <title>Star component tester</title>
+</head>
+<body>
+<h1>Star component tester</h1>
+
+<div class="star-target"></div>
+
+<script>
+  const starModel = sewa.Stars.makeComponent(".star-target", {
+    rank: -1,
+    maxRank: 5
+  });
+</script>
+
+<div class="feedback-target">
+</div>
+
+<script>
+  const feedbackModel = sewa.makeOrderFeedbackClient(".feedback-target", {
+    rating: 3
+  });
+</script>
+
+</body>
+</html>

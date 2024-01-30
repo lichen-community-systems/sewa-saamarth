@@ -6,8 +6,56 @@ const cartScope = function (env) {
 
     const {html, signal, computed} = env;
 
-    const convertMeasure = function (measure) {
+    // const $sewa = env.sewa || {};
+    const sewa = {};
+
+    sewa.timeZone = "IST";
+
+    sewa.defaultCutoff = "20:00";
+
+    sewa.convertMeasure = function (measure) {
         return measure === "1kg" ? "kg" : measure;
+    };
+
+    sewa.today = function () {
+        return (new Date()).toLocaleDateString("en-GB", {year: "2-digit", month: "2-digit", day: "2-digit", timeZone: sewa.timeZone});
+    };
+
+    sewa.timeNow = function () {
+        return (new Date()).toLocaleTimeString("en-GB", {hour: "2-digit", minute: "2-digit", timeZone: sewa.timeZone});
+    };
+
+    // Adapted from https://stackoverflow.com/a/13898483
+    sewa.renderTime = function (timeString) {
+        const [hourString, minute] = timeString.split(":");
+        const hour = +hourString % 24;
+        return (hour % 12 || 12) + ":" + minute + (hour < 12 ? "am" : "pm");
+    };
+
+    // TODO: We assume quantity is in grams and that price is in kg
+    sewa.computeOrderPrice = function (orderQuantity, priceMeasure, price) {
+        return Math.round(orderQuantity * price / 1000);
+    };
+
+    sewa.parseCellQuantity = function (cellQuantity) {
+        const matched = cellQuantity.match(/(\d+)\s*(\D+)?/);
+        return matched ? {
+            orderQuantity: matched[1],
+            unit: matched[2]
+        } : {};
+    };
+
+    sewa.parseCellPrice = function (cellPrice) {
+        const matched = cellPrice.match(/(\d+)\s*\/?\s*(\D+)?/);
+        return matched ? {
+            itemPrice: matched[1],
+            priceMeasure: matched[2]
+        } : {};
+    };
+
+    sewa.parseOrderCell = function (orderCell) {
+        const [cellQuantity, cellPrice] = orderCell.split("@");
+        return {cellQuantity, cellPrice};
     };
 
     // Granularity for updating an order quantity in grams
@@ -49,7 +97,7 @@ const cartScope = function (env) {
                     <img class="row-img" src="${props.relativePath}/img/small/${props.code}.jpg"/>
                     <div class="row-right">
                         <div class="row-name">${props.displayName}</div>
-                        <div class="row-price">₹${props.price} / ${convertMeasure(props.measure)}</div>
+                        <div class="row-price">₹${props.price} / ${sewa.convertMeasure(props.measure)}</div>
                         <div class="row-controls">
                             <div role="button" tabindex="0"
                                  class="minus-button adjust-button ${props.orderQuantity.value ? "" : "disabled"}"
@@ -73,7 +121,9 @@ const cartScope = function (env) {
     const CartRows = function ({rows, relativePath}) {
         return html`<div className="cart-rows">
             ${rows.map((row, index) => {
+        // TODO: forced to indent this oddly, and differently in ESLint and WebStorm
         // console.log("Row ", row, " index ", index);
+
         const togo = html`
             <${CartRow} ...${row} index=${index} relativePath=${relativePath}/>`;
         return togo;
@@ -82,46 +132,95 @@ const cartScope = function (env) {
         </div>`;
     };
 
-    function Cart({model, relativePath}) {
+    sewa.Cart = function ({model, relativePath}) {
         const {rows, orderPrice} = model;
+        const welcome = html`<p>Welcome, ${model.user.name}!</p>`;
+        const renderCutoff = sewa.renderTime(model.cutoff);
         console.log("Cart with rows ", rows);
+        const tooLate = sewa.timeNow() > model.cutoff;
+        if (rows.length === 0) {
+            return html`
+                <div class="cart-root">
+                    ${welcome}
+                    <p>Sorry, SEWA Meghnaben has no items for sale today, please check again later.</p>
+                </div>`;
+        } else if (tooLate) {
+            if (model.existingOrder) {
+                return html`<div className="cart-root">
+                ${welcome}
+                <p>Orders closed today at ${renderCutoff}, your order #${model.existingOrder.orderNumber} placed earlier today will be shipped and can no longer be changed.</p>
+                </div>`;
+            } else {
+                return html`<div className="cart-root">
+                ${welcome}
+                <p>Sorry, orders closed for today at ${renderCutoff}.</p>
+                </div>`;
+            }
+        }
         return html`
             <div class="cart-root">
                 <p>Welcome, ${model.user.name}!</p>
                 <p>SEWA Meghnaben is taking orders today.</p>
-                <p><b>Please check out your cart before 8pm.</b></p>
+                <p><b>Please check out your cart before ${renderCutoff}.</b></p>
+                ${model.existingOrder && html`<p>You are editing your earlier order from today.</p>`}
                 <${CartRows} rows="${rows}" relativePath=${relativePath}/>
-
                 <div class="cart-summary">
                     <div class="checkout-button ${!orderPrice.value ? "disabled" : ""}">Checkout</div>
                     <div class="cart-total"><span class="cart-total-label">Total</span>: <span class="cart-total-price">₹${orderPrice.value}</span>
                     </div>
                 </div>
             </div>`;
-    }
+    };
 
-    const modelisePrices = function (cart) {
-        const priceRows = cart.prices.codes.map(code => cart.prices.items[code])
+    // Accepts output from sewa.convertCartData
+    sewa.modelisePrices = function (cartData) {
+        // TODO: Filter these on the server
+        const todayPrices = cartData.prices.byDate[cartData.date] || [];
+        const cutoff = cartData.prices.cutoffsByDate[cartData.date] || sewa.defaultCutoff;
+
+        const priceRows = cartData.prices.codes.map((code, index) => ({...cartData.prices.items[code], price: todayPrices[index]}))
             .filter(item => !!item.price)
             .sort((a, b) => a.displayName.localeCompare(b.displayName));
 
+        const existing = cartData.currentOrder;
+
+        const fetchInitialQuantity = function (row) {
+            if (existing) {
+                const existingCell = existing.items[row.code];
+                if (existingCell) {
+                    const {cellQuantity} = sewa.parseOrderCell(existingCell);
+                    return +sewa.parseCellQuantity(cellQuantity).orderQuantity;
+                } else {
+                    return 0;
+                }
+            } else {
+                return 0;
+            }
+        };
+
         const rows = priceRows.map((row) => {
-            const orderQuantity = signal(0);
+            const initialQuantity = fetchInitialQuantity(row);
+            const orderQuantity = signal(initialQuantity);
             return {
                 ...row,
                 orderQuantity,
                 // TODO: Read row.measure rather than assuming 1kg
-                orderPrice: computed(() => Math.round(orderQuantity.value * row.price / 1000))
+                orderPrice: computed(() => sewa.computeOrderPrice(orderQuantity.value, row.measure, +row.price)),
+                orderMeasure: signal("gm")
             };
         });
         const orderPrice = computed(() => rows.reduce((sum, row) => sum + row.orderPrice.value, 0));
-        return {rows, orderPrice,
-            user: cart.user};
+        return {
+            rows, orderPrice,
+            existingOrder: existing,
+            cutoff: cutoff,
+            user: cartData.user
+        };
     };
 
     return {
         ...env,
-        sewa: {Cart, modelisePrices}
+        sewa
     };
 };
 

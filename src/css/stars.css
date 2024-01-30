@@ -1,0 +1,14 @@
+.star-container {
+    display: flex;
+    font-size: 40px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.star-selected {
+    color: rgb(255, 215, 0);
+}
+
+.star-unselected {
+    color: gray;
+}

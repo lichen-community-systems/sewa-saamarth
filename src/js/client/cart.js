@@ -1,39 +1,50 @@
 "use strict";
 
-/* global htm, preact, preactSignals, cartScope */
+/* global preact, libEnvScope, cartScope, utilsScope */
 
-//This worked, but will lead to problems in future binding to signal
-//import { html, render } from "https://unpkg.com/htm@3.1.1/preact/standalone.module.js"
-
-//import {render} from "../../lib/preact.js";
-//import htm from "../../lib/htm.js";
-
-const html = htm.bind(preact.h);
-const {signal, computed} = preactSignals;
-
-const libenv = {html, signal, computed};
+const libenv = libEnvScope();
 const env = cartScope(libenv);
+const sewa = {...utilsScope(), ...env.sewa};
 
-const sewa = env.sewa;
+sewa.submitCartClick = async function (e, url, model) {
+    if (!e.target.disabled && url) {
+        const items = model.rows.map(row => ({
+            code: row.code,
+            price: row.price,
+            priceMeasure: row.measure,
+            orderPrice: row.orderPrice.value,
+            orderQuantity: row.orderQuantity.value,
+            orderMeasure: row.orderMeasure.value
+        })).filter(row => row.orderQuantity > 0);
+        const payload = {
+            items,
+            orderPrice: model.orderPrice.value,
+            user: model.user
+        };
+        const response = await sewa.postJSON(url, payload);
+        if (response.redirect) {
+            document.location = response.redirect;
+        }
+    }
+};
 
-const outside = Date.now();
+sewa.renderCart = async function (relativePath, cartPromise) {
+    const cart = await cartPromise;
 
-sewa.renderCart = async function (relativePath) {
-    fetch(`${relativePath}/data/cart-c3kptdg1.json`).then(async function (response) {
-        console.log("Fetched in " + (Date.now() - outside) + " ms");
-        const cart = await response.json();
-        console.log("Fetched cart data ", cart);
+    const model = sewa.modelisePrices(cart);
 
-        const model = sewa.modelisePrices(cart);
+    const nodes = env.html`
+        <${sewa.Cart} model=${model} relativePath=${relativePath}/>`;
 
-        const nodes = html`
-            <${sewa.Cart} model=${model} relativePath=${relativePath}/>`;
+    const now = Date.now();
 
-        const now = Date.now();
+    const element = document.getElementById("cart");
+    preact.render(nodes, element);
 
-        const element = document.getElementById("cart");
-        preact.render(nodes, element);
-        console.log("Rendered in " + (Date.now() - now) + " ms");
-        console.log(element.outerHTML);
-    });
+    const submit = element.querySelector(".checkout-button");
+    if (submit) {
+        submit.addEventListener("click", e => sewa.submitCartClick(e, sewa.submitCart, model));
+    }
+
+    console.log("Rendered in " + (Date.now() - now) + " ms");
 };

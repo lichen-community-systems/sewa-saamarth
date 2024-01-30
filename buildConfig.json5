@@ -13,22 +13,29 @@
         target: "%sewa-saamarth/docs/css"
     }, {
         source: "%sewa-saamarth/src/html/cart.html",
-        target: "%sewa-saamarth/docs/cart/index.html",
+        target: "%sewa-saamarth/docs/template/cart.html",
         replace: [
             {
-            source: "../lib",
-            target: "./lib"
-        }, {
-            source: "../js",
-            target: "./js"
-        }, {
-            source: "../css",
-            target: "./css"
-        }, {
-            source: "renderCart(\"../..\")",
-            target: "renderCart(\"..\")"
-        }
+                source: "../lib",
+                target: "../../lib"
+            }, {
+                source: "../js",
+                target: "../../js"
+            }, {
+                source: "../css",
+                target: "../../css"
+            }, {
+                source: "renderCart(\"../..\")",
+                target: "renderCart(\"..\")"
+            }
         ]
+    }, {
+        source: "%sewa-saamarth/src/html/orders.html",
+        target: "%sewa-saamarth/docs/template/orders.html",
+    }, {
+        source: "%sewa-saamarth/src/html/cart.html",
+        target: "%sewa-saamarth/docs/cart/index.html",
+
     }, {
         source: "%sewa-saamarth/src/js/client/*.js",
         target: "%sewa-saamarth/docs/js/client"
@@ -38,6 +45,9 @@
     }, {
         source: "%sewa-saamarth/img/small",
         target: "%sewa-saamarth/docs/img/small"
+    }, {
+        source: "%sewa-saamarth/img/*.jpg",
+        target: "%sewa-saamarth/docs/img"
     }
     ]
 }

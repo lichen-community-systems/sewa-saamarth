@@ -18,11 +18,11 @@ const scope = function ($sewa) {
     sewa.writePriceData = async function () {
         try {
             const client = await $sewa.getGoogleSheetClient();
-            const allData = await $sewa.getAllSheets(client);
+            const allData = await $sewa.getAllSheets(client, $sewa.lilotriSheetId);
             sewa.writeJSONSync("scratch/allSheets.json", allData);
             const converted = $sewa.convertSheets(allData);
             sewa.writeJSONSync("scratch/converted.json", converted);
-            const cart = $sewa.getCartData(converted, "c3kptdg1", "18/12/23");
+            const cart = $sewa.convertCartData(converted, "c3kptdg1", "18/12/23");
             sewa.writeJSONSync(outputCart, cart);
 
         } catch (e) {

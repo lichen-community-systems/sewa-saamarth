@@ -5,6 +5,20 @@
 const fluidScope = function () {
     const fluid = {};
 
+    /** Returns an array of size count, filled with increasing integers, starting at 0 or at the index specified by first.
+     * @param {Number} count - Size of the filled array to be returned
+     * @param {Number} [first] - (optional, defaults to 0) First element to appear in the array
+     * @return {Array} The generated array
+     */
+    fluid.iota = function (count, first) {
+        first = first || 0;
+        const togo = [];
+        for (let i = 0; i < count; ++i) {
+            togo[togo.length] = first++;
+        }
+        return togo;
+    };
+
     /** Scan through an array or hash of objects, removing those which match a predicate. Similar to
      * jQuery.grep, only acts on the list in-place by removal, rather than by creating
      * a new list by inclusion.
@@ -40,6 +54,38 @@ const fluidScope = function () {
         }
         return target || source;
     };
+
+    // Taken from https://codeburst.io/javascript-async-await-with-foreach-b6ba62bbf404
+    fluid.asyncForEach = async function (array, callback) {
+        for (let index = 0; index < array.length; index++) {
+            await callback(array[index], index, array);
+        }
+    };
+
+    fluid.each = function (hash, callback) {
+        for (let key in hash) {
+            callback(hash[key], key, hash);
+        }
+    };
+
+    fluid.asyncMap = async function (array, callback) {
+        const togo = [];
+        for (let index = 0; index < array.length; index++) {
+            const result = await callback(array[index], index, array);
+            togo.push(result);
+        }
+        return togo;
+    };
+
+    fluid.asyncTransform = async function (hash, callback) {
+        const togo = {};
+        for (let key in hash) {
+            const result = await callback(hash[key], key, hash);
+            togo[key] = result;
+        }
+        return togo;
+    };
+
 
     return fluid;
 };

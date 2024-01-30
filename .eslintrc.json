@@ -10,6 +10,7 @@
         "strict": ["error", "global"],
         "no-loop-func": 0,
         "no-console": 0,
-        "new-cap": 0
+        "new-cap": 0,
+        "quotes": ["error", "double", { "allowTemplateLiterals": true }]
     }
 }

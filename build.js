@@ -92,8 +92,8 @@ fluid.module.refToModuleName = function (ref) {
 };
 
 const doReplace = function (text, replace) {
-    replace.forEach(({replaceSource, replaceTarget}) => {
-        text = text.replaceAll(replaceSource, replaceTarget);
+    replace.forEach(({source, target}) => {
+        text = text.replaceAll(source, target);
     });
     return text;
 };

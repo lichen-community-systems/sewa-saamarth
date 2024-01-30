@@ -1,0 +1,179 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    margin: 0.75rem 1.5rem 1rem 1.5rem;
+}
+
+.order-pay {
+    display: flex;
+    align-items: center;
+}
+
+.order-pay-text {
+    padding-right: 1rem;
+}
+
+.sewa-upi {
+    width: 227px;
+/*    height: 323px; */
+    aspect-ratio: 0.703;
+    min-width: 50%;
+    background-image: url("../img/nrf-upi-code.jpg");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.cart-row {
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 7px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.order-items {
+    max-width: 28rem;
+}
+
+.row-item {
+    display: flex;
+    flex-direction: row;
+
+    background-color: #fafafc;
+    border-radius: 8px;
+    box-shadow: 0px 2px #ebebef;
+
+    align-items: center;
+}
+
+.orders-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.orders-header .row-img {
+    height: 0;
+}
+
+.row-name {
+    width: 8rem;
+}
+
+.row-price {
+    width: 5rem;
+    text-align: end;
+    padding-right: 1rem;
+}
+
+.row-order-price {
+    width: 4rem;
+    text-align: end;
+    padding-right: 1rem;
+}
+
+.row-quantity {
+    width: 4rem;
+    text-align: end;
+}
+
+.past-order-header > div {
+    font-weight: 500;
+}
+
+.row-img {
+    width: 40px;
+    height: 40px;
+    margin: 10px;
+}
+
+.past-order-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: #F0F2F2;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.past-order-placed {
+    width: 10rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.past-order-total {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.past-order-number {
+    width: 4rem;
+    padding-right: 1rem;
+}
+
+.past-order {
+    border: 1px #D5D9D9 solid;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    width: 30rem;
+    max-width: 28rem;
+}
+
+.past-order .row-item {
+    border-radius: 0px;
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+/** TODO duplicate of checkout-button **/
+
+.feedback-button {
+    background-color:#fc8900;
+    color: white;
+    height: 2rem;
+    line-height: 2rem;
+    border-radius: 1rem;
+    text-align: center;
+    font-size: 16px;
+    user-select: none;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+.feedback-button.disabled {
+    filter: grayscale(1);
+}
+
+.feedback-button:hover:not(.disabled){
+    background-color: #f7d6aa;
+}
+
+.feedback-controls {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding-bottom: 1rem;
+}
+
+.feedback-text {
+    width: 20rem;
+}
+
+.star-container {
+    margin-right: 2rem;
+}
+
+.feedback-thanks {
+    text-align: center;
+    font-weight: 500;
+    margin-bottom: 20px;
+    margin-top: -12px;
+}
+
+.feedback-thanks.hidden {
+    display: none;
+}
