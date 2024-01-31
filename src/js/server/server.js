@@ -245,7 +245,7 @@ const makeApp = async function (googleSheetClient, config) {
 
         const userOrders = converted.orders.filter(row => row.userId === userId);
 
-        const todayOrderIndex = userOrders.findIndex(row => row.date === today && row.paid === "FALSE");
+        const todayOrderIndex = userOrders.findIndex(row => row.date === today);
         const todayOrder = userOrders[todayOrderIndex];
 
         if (todayOrderIndex !== -1) {
@@ -293,16 +293,18 @@ const makeApp = async function (googleSheetClient, config) {
 
         if (todayOrder) {
             if (todayOrder.paid === "TRUE") {
-                content += `<div class="order-pay">
-                    <div class="order-pay-text">Thank you for today's order. Your payment has been received.</div>
-                    <div class="order-feedback"></div>
-                </div>`;
+                content += `
+                    <div class="order-pay">
+                        <div class="order-pay-text">Thank you for today's order. Your payment has been received.</div>
+                    </div>
+                    <div class="order-feedback"></div>`;
             } else {
-                content += `<div class="order-pay">
-                    <div class="order-pay-text">Thank you for today's order. Please pay the total of <span class="order-total">${todayOrder.value}</span>
-                    with SEWA's UPI code:</div><div class="sewa-upi"></div>
-                  </div>
-                  <div class="order-feedback"></div>`;
+                content += `
+                    <div class="order-pay">
+                        <div class="order-pay-text">Thank you for today's order. Please pay the total of <span class="order-total">${todayOrder.value}</span>
+                        with SEWA's UPI code:</div><div class="sewa-upi"></div>
+                    </div>
+                    <div class="order-feedback"></div>`;
             }
             content += `<div class="order-items">${dumpOrderItems(todayOrder)}</div>`;
 
