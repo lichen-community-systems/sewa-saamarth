@@ -2,12 +2,14 @@
 
 "use strict";
 
-const express = require("express");
+const express = require("express"),
+    basicAuth = require("express-basic-auth"),
+    JSON5 = require("json5");
+
 const {h} = require("preact");
 const {render} = require("preact-render-to-string");
 const fs = require("fs");
 const htm = require("htm");
-const JSON5 = require("json5");
 
 const html = htm.bind(h);
 const {signal, computed} = require("@preact/signals");
@@ -22,11 +24,15 @@ const sewa = sewaSheetsScope(env.sewa);
 const fluid = require("../shared/fluidLite.js")();
 
 const {parseDocument} = require("../node/doc.js");
+const {logger, loggerMiddleware} = require("./logging.js");
 
-const serverConfig = JSON5.parse(fs.readFileSync("serverConfig.json5", "utf8"));
 
 const readJSONSync = function (path) {
     return JSON.parse(fs.readFileSync(path, "utf8"));
+};
+
+const readJSON5Sync = function (path) {
+    return JSON5.parse(fs.readFileSync(path, "utf8"));
 };
 
 const replaceNodeText = function (document, selector, text) {
@@ -34,9 +40,15 @@ const replaceNodeText = function (document, selector, text) {
     node.textContent = text;
 };
 
-const startServer = async function (googleSheetClient, config) {
+const serverConfig = readJSON5Sync("serverConfig.json5");
+const users = readJSON5Sync("passwords.json5");
 
-    const allDocs = await fluid.asyncTransform(config.tenantConfig, async tenant => {
+const authMiddleware = basicAuth({ users, challenge: true});
+
+const startServer = async function (googleSheetClient, config) {
+    const tenantConfig = config.tenantConfig;
+
+    const allDocs = await fluid.asyncTransform(tenantConfig, async tenant => {
         if (!config.mock) {
             const allSheets = await sewa.getAllSheets(googleSheetClient, tenant.doc);
             return sewa.convertSheets(allSheets);
@@ -46,6 +58,7 @@ const startServer = async function (googleSheetClient, config) {
     });
 
     const app = express();
+    app.use(loggerMiddleware);
 
     app.use("/lib", express.static("docs/lib"));
     app.use("/js", express.static("docs/js"));
@@ -53,7 +66,7 @@ const startServer = async function (googleSheetClient, config) {
     app.use("/css", express.static("docs/css"));
     app.use("/data", express.static("docs/data"));
 
-    app.get("/", (req, res) => {
+    app.get("/", authMiddleware, (req, res) => {
         // TODO: Needs to load dynamically
         const title = "SEWA Saamarth Admin Cart Index";
         let response = `<!DOCTYPE html><html>
@@ -154,20 +167,23 @@ const startServer = async function (googleSheetClient, config) {
         let nextIndex = maxIndex + 1;
 
         const orderItems = payload.items;
+        const newItems = [];
         orderItems.forEach(item => {
             const existingIndex = itemIndex[item.code];
-            if (existingIndex) {
+            if (existingIndex !== undefined) {
                 item.columnIndex = existingIndex;
             } else {
                 item.columnIndex = nextIndex;
                 orderHeaderItems[nextIndex] = item.code;
+                newItems.push(item.code);
                 ++nextIndex;
             }
         });
 
-        if (nextIndex > maxIndex + 1) {
+        if (newItems.length > 0) {
             const newRow0 = [... orderSheet[0].slice(0, sewa.orderHeaderColumns), ...orderHeaderItems];
-            console.log("Found " + (nextIndex - (maxIndex + 1)) + " new items, posting new Orders row 0 ", newRow0);
+            console.log(`Found ${newItems.length} new items `, newItems, "posting new Orders row 0 ", newRow0);
+            await sewa.updateSheetRow(googleSheetClient, tenant.doc, "Orders", newRow0, 0);
         }
 
         const cart = await sewa.getCartData(googleSheetClient, tenant.doc, userId, today);
@@ -195,12 +211,13 @@ const startServer = async function (googleSheetClient, config) {
         });
 
         const newRow = [...orderLeft, ...orderRight];
+        logger.info("Posting order row ", newRow, " to spreadsheet");
 
         if (cart.cartData.currentOrder) {
             const rowIndex = cart.cartData.currentOrderIndex;
             console.log(`Amending existing order with number ${orderNumber} at row ${rowIndex}`);
 
-            await sewa.updateSheetRow(googleSheetClient, tenant.doc, "Orders", newRow, rowIndex);
+            await sewa.updateSheetRow(googleSheetClient, tenant.doc, "Orders", newRow, rowIndex + 1);
         } else {
             // TODO: Add checkbox using https://webapps.stackexchange.com/questions/121502/how-to-add-checkboxes-into-cell-using-google-sheets-api-v4
             console.log(`Adding in new order with number ${orderNumber}`);
@@ -233,7 +250,7 @@ const startServer = async function (googleSheetClient, config) {
             userOrders.splice(todayOrderIndex, 1);
         }
 
-        const dumpOrderItems = function (row) {
+        const dumpOrderItems = function (order) {
             const header = `<div class="orders-header">
                 <div class="row-img"></div>
                 <div class="row-name">Item</div>
@@ -241,21 +258,24 @@ const startServer = async function (googleSheetClient, config) {
                 <div class="row-quantity">Quantity</div>
                 <div class="row-order-price">Price</div>
             </div>`;
-            const rows = Object.entries(row).map(([code, qp]) => {
+            const rows = Object.entries(order.items).map(([code, qp]) => {
                 const {cellQuantity, cellPrice} = sewa.parseOrderCell(qp);
-                return dumpOrderItem(code, cellQuantity, cellPrice);
+                return dumpOrderItem(code, cellQuantity, cellPrice, order.orderNumber);
             });
             return [header, ...rows].join("\n");
         };
 
-        const dumpOrderItem = function (code, cellQuantity, cellPrice) {
-            const item = converted.prices.items[code];
+        const dumpOrderItem = function (code, cellQuantity, cellPrice, orderNumber) {
+            const item = converted.prices.items[code] || {};
+            if (!item.displayName) {
+                logger.error(`Unknown item in order #${orderNumber} with code ${code}`);
+            }
             const {itemPrice, priceMeasure} = sewa.parseCellPrice(cellPrice);
             const {orderQuantity} = sewa.parseCellQuantity(cellQuantity);
 
             return `<div class="row-item" data-row="${code}">
                         <img class="row-img" src="../../../img/small/${code}.jpg"/>
-                        <div class="row-name">${item.displayName}</div>
+                        <div class="row-name">${item.displayName || "[unknown item]"}</div>
                         <div class="row-price">₹${itemPrice} / ${priceMeasure || "kg"}</div>
                         <div class="row-quantity">${cellQuantity}</div>
                         <div class="row-order-price">₹${sewa.computeOrderPrice(orderQuantity, priceMeasure, itemPrice)}</div>
@@ -282,13 +302,13 @@ const startServer = async function (googleSheetClient, config) {
                   </div>
                   <div class="order-feedback"></div>`;
             }
-            content += `<div class="order-items">${dumpOrderItems(todayOrder.items)}</div>`;
+            content += `<div class="order-items">${dumpOrderItems(todayOrder)}</div>`;
 
             const feedbackUrl = `/${req.params.tenant}/orderFeedback/${userId}/${todayOrder.orderNumber}`;
             content += `<script>
                 sewa.makeOrderFeedbackClient(".order-feedback", {
                     feedbackUrl: "${feedbackUrl}",
-                    rating: ${todayOrder.rating},
+                    rating: ${todayOrder.rating || 0},
                     feedbackText: "${todayOrder.feedbackText}"
                     }
                 );
@@ -305,7 +325,7 @@ const startServer = async function (googleSheetClient, config) {
                     <div class="past-order-total"><div>Total</div><div>${order.value}</div></div>
                     <div class="past-order-number"><div>Order #${order.orderNumber}</div></div>
                 </div>`;
-                content += `<div class="order-items">${dumpOrderItems(order.items)}</div>
+                content += `<div class="order-items">${dumpOrderItems(order)}</div>
                 </div>`;
             });
         }
@@ -342,7 +362,7 @@ const startServer = async function (googleSheetClient, config) {
             const feedbackIndex = sewa.orderSchema.indexOf("feedbackText");
             newRow[feedbackIndex] = payload.feedbackText;
 
-            await sewa.updateSheetRow(googleSheetClient, tenant.doc, "Orders", newRow, orderIndex);
+            await sewa.updateSheetRow(googleSheetClient, tenant.doc, "Orders", newRow, orderIndex + 1);
 
             res.json({message: `Feedback for order ${orderNumber} recorded`});
         }

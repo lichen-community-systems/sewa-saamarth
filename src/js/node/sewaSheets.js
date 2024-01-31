@@ -87,8 +87,7 @@ const scope = function ($sewa) {
             "majorDimension": "ROWS",
             "values": [row]
         };
-        // Offset of 1 for 1-based indexing, another 1 for header row
-        const srow = rowIndex + 2;
+        const srow = rowIndex + 1;
         // from here https://stackoverflow.com/questions/46049039/google-sheets-api-v4-values-update-syntax
         const res = await googleSheetClient.spreadsheets.values.update({
             spreadsheetId: sheetId,
