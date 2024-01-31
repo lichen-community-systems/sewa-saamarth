@@ -3,6 +3,8 @@
 "use strict";
 
 const express = require("express"),
+    http = require("http"),
+    https = require("https"),
     basicAuth = require("express-basic-auth"),
     JSON5 = require("json5");
 
@@ -45,7 +47,7 @@ const users = readJSON5Sync("passwords.json5");
 
 const authMiddleware = basicAuth({ users, challenge: true});
 
-const startServer = async function (googleSheetClient, config) {
+const makeApp = async function (googleSheetClient, config) {
     const tenantConfig = config.tenantConfig;
 
     const allDocs = await fluid.asyncTransform(tenantConfig, async tenant => {
@@ -367,17 +369,29 @@ const startServer = async function (googleSheetClient, config) {
             res.json({message: `Feedback for order ${orderNumber} recorded`});
         }
     });
-
-    const port = config.port;
-    app.listen(port);
-    console.log(`Running on port ${port}`);
     return app;
 };
 
-const start = async function () {
+const loadCerts = function (options) {
+    return {
+        key: fs.readFileSync(options.key),
+        cert: fs.readFileSync(options.cert)
+    };
+};
+
+const startServer = async function (config) {
     const client = await sewa.getGoogleSheetClient();
-    const app = await startServer(client, serverConfig);
+    const app = await makeApp(client, serverConfig);
+
+    const server = config.protocol === "http" ? http.createServer(app) :
+        https.createServer(loadCerts(config.serverOptions), app);
+
+    const port = config.port;
+
+    server.listen(port);
+    console.log(`Listening on ${config.protocol} on port ${port}`);
+
     return {client, app};
 };
 
-start().then();
+startServer(serverConfig).then();
