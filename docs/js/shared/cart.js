@@ -9,7 +9,8 @@ const cartScope = function (env) {
     // const $sewa = env.sewa || {};
     const sewa = {};
 
-    sewa.timeZone = "IST";
+    // needs to be an IANA supported timezone listed in https://nodatime.org/TimeZones - e.g. "IST" does not work in Firefox
+    sewa.timeZone = "Asia/Kolkata";
 
     sewa.defaultCutoff = "20:00";
 
