@@ -301,8 +301,10 @@ const makeApp = async function (googleSheetClient, config) {
             } else {
                 content += `
                     <div class="order-pay">
-                        <div class="order-pay-text">Thank you for today's order. Please pay the total of <span class="order-total">${todayOrder.value}</span>
-                        with SEWA's UPI code:</div><div class="sewa-upi"></div>
+                        <div class="order-pay-text"><p>Thank you for today's order. Please pay the total of <span class="order-total">${todayOrder.value}</span>
+                        with SEWA's UPI code:</p><p>You may also pay with cash on delivery.</p></div>
+                      
+                        <a href="upi://pay?pa=paytmqr16v4z4rw8j@paytm&pn=Paytm"><div class="sewa-upi"></div></a>
                     </div>
                     <div class="order-feedback"></div>`;
             }
