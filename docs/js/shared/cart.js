@@ -19,7 +19,7 @@ const cartScope = function (env) {
     };
 
     sewa.today = function () {
-        return (new Date()).toLocaleDateString("en-GB", {year: "2-digit", month: "2-digit", day: "2-digit", timeZone: sewa.timeZone});
+        return (new Date()).toLocaleDateString("en-GB", {year: "numeric", month: "2-digit", day: "2-digit", timeZone: sewa.timeZone});
     };
 
     sewa.timeNow = function () {

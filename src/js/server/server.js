@@ -47,6 +47,13 @@ const users = readJSON5Sync("passwords.json5");
 
 const authMiddleware = basicAuth({ users, challenge: true});
 
+const htmlHeader = `
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">`;
+
 const makeApp = async function (googleSheetClient, config) {
     const tenantConfig = config.tenantConfig;
 
@@ -71,23 +78,59 @@ const makeApp = async function (googleSheetClient, config) {
     app.get("/", authMiddleware, (req, res) => {
         // TODO: Needs to load dynamically
         const title = "SEWA Saamarth Admin Cart Index";
-        let response = `<!DOCTYPE html><html>
-                <head>
-                    <link rel="stylesheet" href="css/index.css" />
+        let response = htmlHeader + `<link rel="stylesheet" href="css/index.css" />
                     <title>${title}</title>
                 </head><body><h1>${title}</h1>`;
         fluid.each(allDocs, (doc, tenant) => {
             response += `<h2>Tenant: ${tenantConfig[tenant].name}</h2>`;
+            const pricesLink = `/${tenant}/prices`;
+            response += `<div class="index-prices">Prices link for pasting to WhatsApp: <a href="${pricesLink}">${pricesLink}</a></div>`;
             response += `<div class="index-table">`;
+            response += `<div class="index-row index-header"><div>User</div><div>Cart Link</div><div>Orders Link</div></div>`;
             fluid.each(doc.users, (rec, userid) => {
-                const link = `/${tenant}/cart/${userid}`;
-                response += `<div class="index-row"><div>Cart for ${rec.name}</div><div><a href="${link}">${link}</a></div></div>`;
+                const cartLink = `/${tenant}/cart/${userid}`;
+                const ordersLink = `/${tenant}/orders/${userid}`;
+                response += `
+                    <div class="index-row">
+                        <div>${rec.name}</div>
+                        <div><a href="${cartLink}">${cartLink}</a></div>
+                        <div><a href="${ordersLink}">${ordersLink}</a></div>
+                    </div>`;
             });
             response += `</div>`;
         });
         response += "</body></html>";
 
         res.send(response);
+    });
+
+    app.get("/:tenant/prices", async (req, res) => {
+        const tenant = tenantConfig[req.params.tenant];
+        const title = `SEWA Saamarth Prices Table for ${tenant.name}`;
+        let response = htmlHeader + `<link rel="stylesheet" href="../css/index.css" />
+                    <title>${title}</title>
+                </head><body><h1>${title}</h1>`;
+
+        const today = sewa.today();
+        response += `Date: ${today} (1kg)`;
+
+        const cart = await sewa.getCartData(googleSheetClient, tenant.doc, "xxxxxxxx", today);
+        // Quickest way to get row of prices in order
+        const model = sewa.modelisePrices(cart.cartData);
+
+        if (model.rows.length > 0) {
+            model.rows.forEach(row => {
+                response += `<div>${row.displayName}: ₹ ${row.price}</div>`;
+            });
+        } else {
+            response += `<p>No items for sale today, set up in 'Prices' tab at
+                <a href="https://docs.google.com/spreadsheets/d/${tenant.doc}/edit">Working Sheet</a></p>`;
+        }
+
+        response += "</body></html>";
+
+        res.send(response);
+
     });
 
     app.get("/:tenant/cart/:userId.json", async (req, res) => {
@@ -114,7 +157,8 @@ const makeApp = async function (googleSheetClient, config) {
                 cart = JSON.parse(fs.readFileSync("data/cart-c3kptdg1.json", "utf8"));
             } else {
                 const today = sewa.today();
-                cart = await sewa.getCartData(googleSheetClient, tenant.doc, userId, today);
+                const allCart = await sewa.getCartData(googleSheetClient, tenant.doc, userId, today);
+                cart = allCart.cartData;
             }
 
             const model = sewa.modelisePrices(cart);

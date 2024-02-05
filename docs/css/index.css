@@ -3,12 +3,20 @@ body {
     margin: 0.75rem 1.5rem 1rem 1.5rem;
 }
 
+.index-prices {
+    margin-bottom: 1rem;
+}
+
 .index-table {
     display: table;
 }
 
 .index-table .index-row:nth-child(odd) {
     background:#fff;
+}
+
+.index-header {
+    font-weight: 500;
 }
 
 .index-row {
