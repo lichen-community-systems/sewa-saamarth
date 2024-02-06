@@ -54,10 +54,9 @@ const htmlHeader = `
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">`;
 
-const makeApp = async function (googleSheetClient, config) {
+const fetchAllDocs = async function (googleSheetClient, config) {
     const tenantConfig = config.tenantConfig;
-
-    const allDocs = await fluid.asyncTransform(tenantConfig, async tenant => {
+    return await fluid.asyncTransform(tenantConfig, async tenant => {
         if (!config.mock) {
             const allSheets = await sewa.getAllSheets(googleSheetClient, tenant.doc);
             return sewa.convertSheets(allSheets);
@@ -65,6 +64,12 @@ const makeApp = async function (googleSheetClient, config) {
             return readJSONSync(tenant.convertedMock);
         }
     });
+};
+
+const makeApp = async function (googleSheetClient, config) {
+    const tenantConfig = config.tenantConfig;
+
+    let allDocs = await fetchAllDocs(googleSheetClient, config);
 
     const app = express();
     app.use(loggerMiddleware);
@@ -75,7 +80,8 @@ const makeApp = async function (googleSheetClient, config) {
     app.use("/css", express.static("docs/css"));
     app.use("/data", express.static("docs/data"));
 
-    app.get("/", authMiddleware, (req, res) => {
+    app.get("/", authMiddleware, async (req, res) => {
+        allDocs = await fetchAllDocs(googleSheetClient, config);
         // TODO: Needs to load dynamically
         const title = "SEWA Saamarth Admin Cart Index";
         let response = htmlHeader + `<link rel="stylesheet" href="css/index.css" />
