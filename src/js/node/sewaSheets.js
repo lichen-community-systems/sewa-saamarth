@@ -121,7 +121,7 @@ const scope = function ($sewa) {
         const col0 = rows.map(row => row[indexCol]);
         const togo = {};
         for (const [code, text] of Object.entries(index)) {
-            const index = col0.findIndex(cell => cell.includes(text));
+            const index = col0.findIndex(cell => cell?.includes(text));
             if (index === -1) {
                 console.log(`Error in ${sheetName}: expected row with text ${text} not found`);
             } else {
