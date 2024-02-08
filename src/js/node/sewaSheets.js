@@ -15,7 +15,8 @@ const priceIndex = {
     code: "Code",
     english: "English",
     measure: "Price Measure",
-    price: "Today"
+    price: "Today",
+    minimumOrder: "Minimum"
 };
 
 const userIndex = ["Name", "ID", "Phone"];

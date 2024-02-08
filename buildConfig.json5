@@ -48,6 +48,9 @@
     }, {
         source: "%sewa-saamarth/img/*.jpg",
         target: "%sewa-saamarth/docs/img"
+    }, {
+        source: "%sewa-saamarth/img/favicon.ico",
+        target: "%sewa-saamarth/docs/favicon.ico"
     }
     ]
 }

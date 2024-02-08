@@ -74,6 +74,7 @@ const makeApp = async function (googleSheetClient, config) {
     const app = express();
     app.use(loggerMiddleware);
 
+    app.use("/favicon.ico", express.static("docs/favicon.ico"));
     app.use("/lib", express.static("docs/lib"));
     app.use("/js", express.static("docs/js"));
     app.use("/img", express.static("docs/img"));

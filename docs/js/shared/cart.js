@@ -14,6 +14,8 @@ const cartScope = function (env) {
 
     sewa.defaultCutoff = "20:00";
 
+    sewa.vendor = "SEWA Lilotri";
+
     sewa.convertMeasure = function (measure) {
         return measure === "1kg" ? "kg" : measure;
     };
@@ -46,6 +48,15 @@ const cartScope = function (env) {
         } : {};
     };
 
+    sewa.parseMinimumOrder = function (minimumOrder) {
+        const matched = minimumOrder?.match(/(\d+)\s*(\D+)?/);
+        return matched ? {
+            minimum: +matched[1],
+            unit: matched[2]
+        } : {};
+    };
+
+
     sewa.parseCellPrice = function (cellPrice) {
         const matched = cellPrice.match(/(\d+)\s*\/?\s*(\D+)?/);
         return matched ? {
@@ -63,11 +74,18 @@ const cartScope = function (env) {
     const granularity = 50;
 
     function CartRow(props) {
+        const parsedMinimumOrder = sewa.parseMinimumOrder(props.minimumOrder);
+        const minimum = parsedMinimumOrder?.minimum || 0;
+
         const onPlus = function () {
             props.orderQuantity.value += granularity;
+            props.orderQuantity.value = Math.max(props.orderQuantity.value, minimum);
         };
         const onMinus = function () {
             props.orderQuantity.value = Math.max(props.orderQuantity.value - granularity, 0);
+            if (props.orderQuantity.value < minimum) {
+                props.orderQuantity.value = 0;
+            }
         };
         const onKeyDown = function (e, handler) {
             console.log("onKeyDown ", e, handler);
@@ -137,13 +155,12 @@ const cartScope = function (env) {
         const {rows, orderPrice} = model;
         const welcome = html`<p>Welcome, ${model.user.name}!</p>`;
         const renderCutoff = sewa.renderTime(model.cutoff);
-        console.log("Cart with rows ", rows);
         const tooLate = sewa.timeNow() > model.cutoff;
         if (rows.length === 0) {
             return html`
                 <div class="cart-root">
                     ${welcome}
-                    <p>Sorry, SEWA Meghnaben has no items for sale today, please check again later.</p>
+                    <p>Sorry, ${sewa.vendor} has no items for sale today, please check again later.</p>
                 </div>`;
         } else if (tooLate) {
             if (model.existingOrder) {
@@ -161,7 +178,7 @@ const cartScope = function (env) {
         return html`
             <div class="cart-root">
                 <p>Welcome, ${model.user.name}!</p>
-                <p>SEWA Meghnaben is taking orders today.</p>
+                <p>${sewa.vendor} is taking orders today.</p>
                 <p><b>Please check out your cart before ${renderCutoff}.</b></p>
                 ${model.existingOrder && html`<p>You are editing your earlier order from today.</p>`}
                 <${CartRows} rows="${rows}" relativePath=${relativePath}/>
