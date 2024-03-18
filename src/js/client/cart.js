@@ -14,7 +14,7 @@ sewa.submitCartClick = async function (e, url, model) {
             priceMeasure: row.measure,
             orderPrice: row.orderPrice.value,
             orderQuantity: row.orderQuantity.value,
-            orderMeasure: row.orderMeasure.value
+            orderMeasure: row.parsedMeasure.orderMeasure
         })).filter(row => row.orderQuantity > 0);
         const payload = {
             items,

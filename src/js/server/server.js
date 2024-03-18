@@ -260,7 +260,10 @@ const makeApp = async function (googleSheetClient, config) {
 
         const orderRight = [];
         orderItems.forEach(item => {
-            orderRight[item.columnIndex] = item.orderQuantity + item.orderMeasure + "@" + item.price + "/" + item.priceMeasure;
+            // Only store the order measure in the cell if it is different from the price measure - to avoid corruption such as
+            // with e.g. bananas where priceMeasure is "10pcs" which can't be separated from the orderQuantity
+            const leftMeasure = item.orderMeasure === item.priceMeasure ? "" : item.orderMeasure;
+            orderRight[item.columnIndex] = item.orderQuantity + leftMeasure + "@" + item.price + "/" + item.priceMeasure;
         });
 
         const newRow = [...orderLeft, ...orderRight];
@@ -324,14 +327,15 @@ const makeApp = async function (googleSheetClient, config) {
                 logger.error(`Unknown item in order #${orderNumber} with code ${code}`);
             }
             const {itemPrice, priceMeasure} = sewa.parseCellPrice(cellPrice);
+            const parsedMeasure = sewa.parseMeasure(priceMeasure);
             const {orderQuantity} = sewa.parseCellQuantity(cellQuantity);
 
             return `<div class="row-item" data-row="${code}">
                         <img class="row-img" src="../../../img/small/${code}.jpg"/>
                         <div class="row-name">${item.displayName || "[unknown item]"}</div>
-                        <div class="row-price">₹${itemPrice} / ${priceMeasure || "kg"}</div>
+                        <div class="row-price">₹${itemPrice} / ${parsedMeasure.priceMeasure}</div>
                         <div class="row-quantity">${cellQuantity}</div>
-                        <div class="row-order-price">₹${sewa.computeOrderPrice(orderQuantity, priceMeasure, itemPrice)}</div>
+                        <div class="row-order-price">₹${sewa.computeOrderPrice(orderQuantity, parsedMeasure, itemPrice)}</div>
                     </div>`;
         };
 

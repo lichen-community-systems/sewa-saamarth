@@ -57,7 +57,7 @@ const cartScope = function (env) {
 
 
     sewa.parseCellPrice = function (cellPrice) {
-        const matched = cellPrice.match(/(\d+)\s*\/?\s*(\D+)?/);
+        const matched = cellPrice.match(/(\d+)\s*\/?\s*(\w+)?/);
         return matched ? {
             itemPrice: matched[1],
             priceMeasure: matched[2]
@@ -88,6 +88,7 @@ const cartScope = function (env) {
         const parsedMinimumOrder = sewa.parseMinimumOrder(props.minimumOrder);
         const minimum = parsedMinimumOrder?.minimum || 0;
         const grain = props.parsedMeasure.grain;
+        const orderMeasure = props.parsedMeasure.orderMeasure;
 
         const onPlus = function () {
             props.orderQuantity.value += grain;
@@ -128,7 +129,7 @@ const cartScope = function (env) {
                     <img class="row-img" src="${props.relativePath}/img/small/${props.code}.jpg"/>
                     <div class="row-right">
                         <div class="row-name">${props.displayName}</div>
-                        <div class="row-price">₹${props.price} / ${sewa.convertMeasure(props.measure)}</div>
+                        <div class="row-price">₹${props.price} / ${orderMeasure}</div>
                         <div class="row-controls">
                             <div role="button" tabindex="0"
                                  class="minus-button adjust-button ${props.orderQuantity.value ? "" : "disabled"}"
@@ -136,7 +137,7 @@ const cartScope = function (env) {
                                  onKeyDown=${(e) => onKeyDown(e, onMinus)}>–
                             </div>
                             <input class="quantity" type="text" value=${props.orderQuantity.value || ""}
-                                   onChange=${onEntry}/> <div class="row-measure">${props.parsedMeasure.orderMeasure}</div>
+                                   onChange=${onEntry}/> <div class="row-measure">${orderMeasure}</div>
                             <div role="button" tabindex="0"
                                  class="plus-button adjust-button"
                                  onClick=${onPlus}
