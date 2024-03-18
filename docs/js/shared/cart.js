@@ -35,9 +35,8 @@ const cartScope = function (env) {
         return (hour % 12 || 12) + ":" + minute + (hour < 12 ? "am" : "pm");
     };
 
-    // TODO: We assume quantity is in grams and that price is in kg
-    sewa.computeOrderPrice = function (orderQuantity, priceMeasure, price) {
-        return Math.round(orderQuantity * price / 1000);
+    sewa.computeOrderPrice = function (orderQuantity, parsedMeasure, price) {
+        return Math.round(orderQuantity * price / parsedMeasure.factor);
     };
 
     sewa.parseCellQuantity = function (cellQuantity) {
@@ -65,24 +64,37 @@ const cartScope = function (env) {
         } : {};
     };
 
+    sewa.parseMeasure = function (measure) {
+        return measure === "kg" ? {
+            orderMeasure: "gm",
+            priceMeasure: measure,
+            grain: 50,
+            factor: 1000
+        } : {
+            orderMeasure: measure,
+            priceMeasure: measure,
+            grain: 1,
+            factor: 1
+        };
+    };
+
     sewa.parseOrderCell = function (orderCell) {
         const [cellQuantity, cellPrice] = orderCell.split("@");
         return {cellQuantity, cellPrice};
     };
 
-    // Granularity for updating an order quantity in grams
-    const granularity = 50;
 
     function CartRow(props) {
         const parsedMinimumOrder = sewa.parseMinimumOrder(props.minimumOrder);
         const minimum = parsedMinimumOrder?.minimum || 0;
+        const grain = props.parsedMeasure.grain;
 
         const onPlus = function () {
-            props.orderQuantity.value += granularity;
+            props.orderQuantity.value += grain;
             props.orderQuantity.value = Math.max(props.orderQuantity.value, minimum);
         };
         const onMinus = function () {
-            props.orderQuantity.value = Math.max(props.orderQuantity.value - granularity, 0);
+            props.orderQuantity.value = Math.max(props.orderQuantity.value - grain, 0);
             if (props.orderQuantity.value < minimum) {
                 props.orderQuantity.value = 0;
             }
@@ -102,7 +114,7 @@ const cartScope = function (env) {
             const value = e.target.value;
             const number = Number(value);
             if (!isNaN(number)) {
-                const rounded = Math.round(number / granularity) * granularity;
+                const rounded = Math.round(number / grain) * grain;
                 props.orderQuantity.value = rounded;
                 e.target.value = rounded;
             } else {
@@ -124,7 +136,7 @@ const cartScope = function (env) {
                                  onKeyDown=${(e) => onKeyDown(e, onMinus)}>–
                             </div>
                             <input class="quantity" type="text" value=${props.orderQuantity.value || ""}
-                                   onChange=${onEntry}/> gm
+                                   onChange=${onEntry}/> <div class="row-measure">${props.parsedMeasure.orderMeasure}</div>
                             <div role="button" tabindex="0"
                                  class="plus-button adjust-button"
                                  onClick=${onPlus}
@@ -219,12 +231,12 @@ const cartScope = function (env) {
         const rows = priceRows.map((row) => {
             const initialQuantity = fetchInitialQuantity(row);
             const orderQuantity = signal(initialQuantity);
+            const parsedMeasure = sewa.parseMeasure(row.measure);
             return {
                 ...row,
                 orderQuantity,
-                // TODO: Read row.measure rather than assuming 1kg
-                orderPrice: computed(() => sewa.computeOrderPrice(orderQuantity.value, row.measure, +row.price)),
-                orderMeasure: signal("gm")
+                parsedMeasure,
+                orderPrice: computed(() => sewa.computeOrderPrice(orderQuantity.value, parsedMeasure, +row.price))
             };
         });
         const orderPrice = computed(() => rows.reduce((sum, row) => sum + row.orderPrice.value, 0));
