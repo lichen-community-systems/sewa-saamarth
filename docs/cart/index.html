@@ -21,10 +21,11 @@
 </script>
 <script id="submitCart">
   sewa.submitCart = null;
+  sewa.cartRelativePath = "..";
 </script>
 <script>
   const node = document.getElementById("cart");
-  sewa.renderCart("../..", sewa.cart);
+  sewa.renderCart(sewa.cartRelativePath, sewa.cart);
 </script>
 </body>
 </html>

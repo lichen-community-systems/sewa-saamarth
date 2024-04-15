@@ -185,7 +185,10 @@ const makeApp = async function (googleSheetClient, config) {
         }
 
         const submitNode = template.querySelector("#submitCart");
-        submitNode.innerHTML = `sewa.submitCart = "${req.url.replace("cart", "order")}"`;
+        submitNode.innerHTML = `
+            sewa.submitCart = "${req.url.replace("cart", "order")}";
+            sewa.cartRelativePath = "../..";
+            `;
 
         const outMarkup = "<!DOCTYPE html>" + template.documentElement.outerHTML;
 
