@@ -201,7 +201,8 @@ const scope = function ($sewa) {
         return {
             name: row[0],
             id: row[1],
-            phone: row[2]
+            phone: row[2],
+            notify: row[3]
         };
     };
 

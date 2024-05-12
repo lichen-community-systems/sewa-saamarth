@@ -27,6 +27,7 @@ const fluid = require("../shared/fluidLite.js")();
 
 const {parseDocument} = require("../node/doc.js");
 const {logger, loggerMiddleware} = require("./logging.js");
+const {sendSMS} = require("./twilio.js");
 
 
 const readJSONSync = function (path) {
@@ -64,6 +65,29 @@ const fetchAllDocs = async function (googleSheetClient, config) {
             return readJSONSync(tenant.convertedMock);
         }
     });
+};
+
+const dumpOrderForSMS = function (order) {
+    // This is a "submitted order" rather than an order received from persistence
+    const itemList = order.items.map(item => {
+        return `${item.orderQuantity}${item.orderMeasure} ${item.code}`;
+    });
+    const items = itemList.join("\n");
+    return `SEWA Saamarth order placed by ${order.name} value INR${order.value}, items:\n${items}`;
+};
+
+const notifySMSOrder = async function (users, order) {
+    try {
+        const toNotify = Object.values(users).filter(user => user.notify === "TRUE");
+        const rendered = dumpOrderForSMS(order);
+        await fluid.asyncForEach(toNotify, async function (oneUser) {
+            const E164 = "+" + oneUser.phone;
+            logger.info("Notifing user " + oneUser.name + " at number " + E164);
+            await sendSMS(E164, rendered);
+        });
+    } catch (e) {
+        logger.error("Error sending SMS message: ", e);
+    }
 };
 
 const makeApp = async function (googleSheetClient, config) {
@@ -288,6 +312,12 @@ const makeApp = async function (googleSheetClient, config) {
             redirect: req.url.replace("order", "orders")
         };
         res.json(response);
+
+        const orderMock = {...orderLeftHash, ...{items: payload.items}};
+
+        process.nextTick(() => {
+            notifySMSOrder(converted.users, orderMock);
+        });
     });
 
     app.get("/:tenant/orders/:userId", async (req, res) => {

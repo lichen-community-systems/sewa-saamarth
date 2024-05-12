@@ -137,3 +137,4 @@ ssl
 passwords.json5
 serverConfig.json5
 *.pem
+twilio-creds.json
