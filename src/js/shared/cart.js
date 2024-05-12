@@ -129,7 +129,7 @@ const cartScope = function (env) {
                     <img class="row-img" src="${props.relativePath}/img/small/${props.code}.jpg"/>
                     <div class="row-right">
                         <div class="row-name">${props.displayName}</div>
-                        <div class="row-price">₹${props.price} / ${props.priceMeasure}</div>
+                        <div class="row-price">₹${props.price} / ${props.parsedMeasure.priceMeasure}</div>
                         <div class="row-controls">
                             <div role="button" tabindex="0"
                                  class="minus-button adjust-button ${props.orderQuantity.value ? "" : "disabled"}"
